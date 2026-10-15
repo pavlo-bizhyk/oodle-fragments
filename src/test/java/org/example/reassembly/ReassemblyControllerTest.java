@@ -7,6 +7,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.springframework.http.MediaType.TEXT_PLAIN;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -34,5 +35,16 @@ class ReassemblyControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(TEXT_PLAIN))
                 .andExpect(content().string("This is an example problem."));
+    }
+
+    @Test
+    void rejectsEmptyRequestBody() throws Exception {
+        mockMvc.perform(post("/reassemble")
+                        .contentType(TEXT_PLAIN)
+                        .accept(TEXT_PLAIN)
+                        .content(""))
+                .andExpect(status().isBadRequest());
+
+        then(reassemblyService).shouldHaveNoInteractions();
     }
 }
