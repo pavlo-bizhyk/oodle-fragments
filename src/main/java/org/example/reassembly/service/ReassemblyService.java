@@ -15,6 +15,13 @@ public class ReassemblyService {
     private static final Logger log =
             LoggerFactory.getLogger(ReassemblyService.class);
 
+    /**
+     * Reassembles semicolon-separated document fragments by repeatedly
+     * merging the pair with the largest suffix-prefix overlap.
+     *
+     * @param input semicolon-separated document fragments
+     * @return the reconstructed document
+     */
     public String reassemble(String input) {
         List<String> fragments = new ArrayList<>(
                 new LinkedHashSet<>(List.of(input.split(";", -1)))
@@ -24,7 +31,7 @@ public class ReassemblyService {
 
         log.debug("Processing {} unique fragments", fragments.size());
 
-        removeContainedFragments(fragments);
+        removeRedundantFragments(fragments);
 
         if (fragments.isEmpty()) {
             log.debug("No fragments to reassemble");
@@ -63,7 +70,7 @@ public class ReassemblyService {
             fragments.set(bestI, merged);
             fragments.remove(bestJ);
 
-            removeContainedFragments(fragments);
+            removeRedundantFragments(fragments);
         }
 
         String result = fragments.getFirst();
@@ -71,6 +78,10 @@ public class ReassemblyService {
         return result;
     }
 
+    /**
+     * Returns the length of the longest suffix of a that matches
+     * a prefix of b.
+     */
     private int overlap(String a, String b) {
         int maxLength = Math.min(a.length(), b.length());
 
@@ -92,7 +103,7 @@ public class ReassemblyService {
         return a + b.substring(overlap);
     }
 
-    private void removeContainedFragments(List<String> fragments) {
+    private void removeRedundantFragments(List<String> fragments) {
         fragments.removeIf(fragment ->
                 fragments.stream().anyMatch(other ->
                         !Objects.equals(other, fragment)
