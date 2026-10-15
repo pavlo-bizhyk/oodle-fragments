@@ -1,4 +1,4 @@
-package org.example.reassembly;
+package org.example.reassembly.service;
 
 import org.springframework.stereotype.Service;
 import org.slf4j.Logger;

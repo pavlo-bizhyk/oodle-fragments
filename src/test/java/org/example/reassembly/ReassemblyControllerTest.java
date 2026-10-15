@@ -1,5 +1,7 @@
 package org.example.reassembly;
 
+import org.example.reassembly.controller.ReassemblyController;
+import org.example.reassembly.service.ReassemblyService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
