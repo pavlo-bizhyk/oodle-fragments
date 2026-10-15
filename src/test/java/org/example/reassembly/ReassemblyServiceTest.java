@@ -28,6 +28,16 @@ class ReassemblyServiceTest {
                         "This is an example problem."
                 ),
 
+                Arguments.of(
+                        "nother.;his is an;Th",
+                        "This is another."
+                ),
+
+                Arguments.of(
+                        "A m;mangled ph;phrase.;A man;angled ;ed phrase",
+                        "A mangled phrase."
+                ),
+
                 // Duplicate fragments
                 Arguments.of(
                         "hello ;world;hello ;world",
