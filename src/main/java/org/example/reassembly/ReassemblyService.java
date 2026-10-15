@@ -1,14 +1,13 @@
 package org.example.reassembly;
 
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class ReassemblyService {
@@ -60,9 +59,9 @@ public class ReassemblyService {
                     maxOverlap
             );
 
-            fragments.remove(bestI);
-            fragments.remove(bestJ > bestI ? bestJ - 1 : bestJ);
-            fragments.add(merged);
+            // Keep the merged fragment in its original position.
+            fragments.set(bestI, merged);
+            fragments.remove(bestJ);
 
             removeContainedFragments(fragments);
         }

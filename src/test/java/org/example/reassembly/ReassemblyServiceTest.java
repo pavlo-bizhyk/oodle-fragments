@@ -97,6 +97,12 @@ class ReassemblyServiceTest {
                 Arguments.of(
                         "aaaa;aaab;abcd",
                         "aaaabcd"
+                ),
+
+                //input order with no overlap
+                Arguments.of(
+                        "cat;dog;fish",
+                        "catdogfish"
                 )
         );
     }
