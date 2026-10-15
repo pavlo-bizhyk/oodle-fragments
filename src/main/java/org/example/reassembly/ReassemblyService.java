@@ -7,39 +7,39 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Objects;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class ReassemblyService {
 
+    private static final Logger log =
+            LoggerFactory.getLogger(ReassemblyService.class);
+
     public String reassemble(String input) {
         List<String> fragments = new ArrayList<>(
-                new LinkedHashSet<>(
-                        List.of(input.split(";", -1))
-                )
+                new LinkedHashSet<>(List.of(input.split(";", -1)))
         );
 
         fragments.removeIf(String::isBlank);
 
+        log.debug("Processing {} unique fragments", fragments.size());
+
         removeContainedFragments(fragments);
 
         if (fragments.isEmpty()) {
+            log.debug("No fragments to reassemble");
             return "";
         }
 
         while (fragments.size() > 1) {
-            int bestI = 0;
-            int bestJ = 1;
-            int maxOverlap = -1;
+            int bestI = 0, bestJ = 1, maxOverlap = -1;
 
             for (int i = 0; i < fragments.size(); i++) {
                 for (int j = 0; j < fragments.size(); j++) {
-                    if (i == j) {
-                        continue;
-                    }
+                    if (i == j) continue;
 
-                    int overlap = overlap(
-                            fragments.get(i),
-                            fragments.get(j)
-                    );
+                    int overlap = overlap(fragments.get(i), fragments.get(j));
 
                     if (overlap > maxOverlap) {
                         maxOverlap = overlap;
@@ -49,23 +49,27 @@ public class ReassemblyService {
                 }
             }
 
+            log.debug(
+                    "Merging fragments: overlap={}, remaining={}",
+                    maxOverlap, fragments.size()
+            );
+
             String merged = merge(
                     fragments.get(bestI),
                     fragments.get(bestJ),
                     maxOverlap
             );
 
-            // Remove both original fragments.
             fragments.remove(bestI);
             fragments.remove(bestJ > bestI ? bestJ - 1 : bestJ);
-
             fragments.add(merged);
 
-            // The merge may now contain other fragments in full.
             removeContainedFragments(fragments);
         }
 
-        return fragments.getFirst();
+        String result = fragments.getFirst();
+        log.debug("Reassembly finished");
+        return result;
     }
 
     private int overlap(String a, String b) {
